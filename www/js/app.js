@@ -9,6 +9,25 @@ angular.module('starter', ['ionic', 'ionic.cloud','starter.controllers', 'starte
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
+    
+    ble.isEnabled(
+      function(){
+        // Bluetooth is enabled
+      },
+      function(){
+        // Bluetooth not yet enabled so we try to enable it
+        ble.enable(
+          function(){
+            // bluetooth now enabled
+          },
+          function(err){
+            alert('Cannot enable bluetooth');
+          }
+        );
+      }
+    );
+    
+    
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
     if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {

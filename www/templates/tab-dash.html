@@ -13,9 +13,28 @@
     <p>
       For help sending push notifications, join the <a href="https://apps.ionic.io/signup" target="_blank">Ionic Platform</a> and check out <a href="http://docs.ionic.io/docs/push-overview" target="_blank">Ionic Push</a>. We also have other services available.
     </p>
+    
+    <ion-list>
+  <ion-item>
+      <ion-label primary>Inline Label</ion-label>
+      <label class="item item-input">
+        <input type="text" placeholder="Last Name" ng-model="name">
+      </label>
+    </ion-item>
+    
     <button class="button button-block button-positive" ng-click="buscar()">
       ESCANEAR
     </button>
+    
+    </ion-list>
+    
+    <ion-list>
+      <ion-item ng-repeat="device in devices" >
+        <p>{{device.name}}</p>
+      </ion-item>
+      
+    </ion-list>
+    
     
   </ion-content>
 </ion-view>

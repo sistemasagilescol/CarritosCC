@@ -4,10 +4,55 @@ angular.module('starter.controllers', [])
 
 .controller('DashCtrl', function($scope) {
   
+  $scope.devices=[{name:"Julio"}];
+  $scope.data={};
+  $scope.name = "";
+  
   $scope.buscar=function(){
-    ble.startScan(services, success, failure);
-    alert('BLUETOOTH FOUND');
+    
+    $scope.data.name=$scope.name;
+    $scope.devices.push($scope.data);
+
+  
+     /*ble.startScan(
+        [],
+        function(device){
+          devices.push(device);
+          alert(device);
+        },
+        function(err){
+          alert('Scanning failed. Please try again.');
+        }
+      );*/
+    alert($scope.devices.length);
+    
+    //alert('DEVICES: ' + devices.length);
   }
+  
+ /* $scope.scan = function(){
+      ble.startScan(
+        [],
+        function(device){
+          if(device.name){
+            DeviceFactory.addDevice({ 'id': device.id, 'name': device.name });
+          }
+        },
+        function(err){
+          alert('Scanning failed. Please try again.');
+        }
+      );
+
+      setTimeout(
+          ble.stopScan,
+          1500,
+          function(){
+            $scope.$apply(function(){
+              $scope.devices = DeviceFactory.getDevices();
+            });
+          },
+          function(){
+            // Stopping scan failed
+          } );}*/
   
 })
 
