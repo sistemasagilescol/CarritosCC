@@ -5,7 +5,7 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'ionic.cloud','starter.controllers', 'starter.services'])
+angular.module('starter', ['ionic', 'ionic.cloud','starter.controllers', 'starter.services','firebase'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -94,8 +94,8 @@ angular.module('starter', ['ionic', 'ionic.cloud','starter.controllers', 'starte
         }
       }
     })
-
-  .state('tab.account', {
+//Tab account
+  /*.state('tab.account', {
     url: '/account',
     views: {
       'tab-account': {
@@ -103,7 +103,19 @@ angular.module('starter', ['ionic', 'ionic.cloud','starter.controllers', 'starte
         controller: 'AccountCtrl'
       }
     }
-  });
+  });*/
+
+  .state('tab.Dispositivos',{
+    url: '/Dispositivos',
+    views: {
+        'Dispositivos': {
+          templateUrl: 'templates/Dispositivos.html',
+          controller: 'DispositivosCtrl'
+        }
+      }    
+    }
+  );
+
 
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/tab/dash');

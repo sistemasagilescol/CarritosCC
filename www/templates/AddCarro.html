@@ -1,33 +1,14 @@
-<ion-view view-title="Dashboard">
-  <ion-content class="padding">
-    <h2>Carritos CC</h2>
-    
-    <button class="button button-block button-positive" ng-click="buscar()">
-      Buscar Carros
-    </button>
-    
-    <button class="button button-block button-positive" ng-click="addCarrito()">
-      Add Carrito
-    </button>
-    
-    </ion-list>
-    
-    <ion-list>
-      <ion-item ng-repeat="device in devices" >
-        <p>{{device.name}}</p>
-      </ion-item>
-    </ion-list>
-    
-    
-     <div class="row">
+<ion-view view-title="Dispositivos">
+  <ion-content>
+	  
+	   <div class="row">
         <button class ="button button-block button-positive">
          Buscar nuevo Dispositivo 
          </button>
       </div>
 	  
-    
-    
-    <div class="list card" >
+	  
+     <div class="list card" ng-hide="NuevoDispositivo">
 		
       <div class="item item-avatar">
         <h2>Nuevo carrito</h2>
@@ -47,7 +28,6 @@
       </label>
     
 	   </div>
-    
     
   </ion-content>
 </ion-view>

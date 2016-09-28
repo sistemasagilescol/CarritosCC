@@ -2,32 +2,45 @@ angular.module('starter.controllers', [])
 
 
 
-.controller('DashCtrl', function($scope) {
+.controller('DashCtrl', function($scope,$firebaseArray) {
   
-  $scope.devices=[{name:"Julio"}];
-  $scope.data={};
-  $scope.name = "";
+  $scope.devices=[];
+  
+
+  
   
   $scope.buscar=function(){
     
-    $scope.data.name=$scope.name;
-    $scope.devices.push($scope.data);
-
-  
-     /*ble.startScan(
-        [],
-        function(device){
-          devices.push(device);
-          alert(device);
-        },
-        function(err){
-          alert('Scanning failed. Please try again.');
-        }
-      );*/
-    alert($scope.devices.length);
+     //$scope.devices.push('Julio: '+Math.floor(Math.random() * 1000) + 4);
+     while(true){
+      ble.startScan(
+          [],
+          function(device){
+            $scope.devices.push(device);
+            alert(device.name);
+          },
+          function(err){
+            alert('Scanning failed. Please try again.');
+          }
+        );
+     }
+   // alert($scope.devices.length);
     
     //alert('DEVICES: ' + devices.length);
+  };
+  
+  $scope.addCarrito=function(){
+     var dispositivos = new Firebase("https://carritoscc.firebaseio.com/Dispositivos");
+     
+     $scope.DispositivosBLE = $firebaseArray(dispositivos);
+     
+     $scope.DispositivosBLE.$add({
+				Id: "BLE",
+				Nombre: "Carrito X"
+			});
+     
   }
+  
   
  /* $scope.scan = function(){
       ble.startScan(
@@ -75,8 +88,10 @@ angular.module('starter.controllers', [])
   $scope.chat = Chats.get($stateParams.chatId);
 })
 
-.controller('AccountCtrl', function($scope) {
-  $scope.settings = {
-    enableFriends: true
-  };
+.controller('DispositivosCtrl', function($scope,$firebaseArray) {
+  //Apuntador principal
+  var dispositivos = new Firebase("https://carritoscc.firebaseio.com/Dispositivos");
+     
+  $scope.DispositivosBLE = $firebaseArray(dispositivos);
+  
 });
