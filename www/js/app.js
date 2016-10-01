@@ -71,7 +71,12 @@ angular.module('starter', ['ionic', 'ionic.cloud','starter.controllers', 'starte
     views: {
       'tab-dash': {
         templateUrl: 'templates/tab-dash.html',
-        controller: 'DashCtrl'
+        controller: 'DashCtrl',
+        resolve: {
+          message: function(GobackFact){
+                return GobackFact.getMessage();
+        } 
+        }  
       }
     }
   })
@@ -93,17 +98,26 @@ angular.module('starter', ['ionic', 'ionic.cloud','starter.controllers', 'starte
           controller: 'ChatDetailCtrl'
         }
       }
-    })
-//Tab account
-  /*.state('tab.account', {
-    url: '/account',
-    views: {
-      'tab-account': {
-        templateUrl: 'templates/tab-account.html',
-        controller: 'AccountCtrl'
+    })    
+  
+  
+  
+ /* .state('AddCarro', {
+        url: "/Dispositivos/:AddCarro",
+        templateUrl: "templates/AddCarro.html",
+        controller: 'NuevoCarroCtrl'
+    })*/
+  
+   .state('tab.AddCarro', {
+      url: '/AddCarro',
+      views: {
+          'Dispositivos': {
+            templateUrl: 'templates/AddCarro.html',
+            controller: 'NuevoCarroCtrl' 
+          }
       }
-    }
-  });*/
+    })
+  
 
   .state('tab.Dispositivos',{
     url: '/Dispositivos',
@@ -116,6 +130,7 @@ angular.module('starter', ['ionic', 'ionic.cloud','starter.controllers', 'starte
     }
   );
 
+  
 
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/tab/dash');

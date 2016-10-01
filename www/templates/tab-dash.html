@@ -1,53 +1,25 @@
 <ion-view view-title="Dashboard">
-  <ion-content class="padding">
-    <h2>Carritos CC</h2>
+  
+  <ion-content>
     
-    <button class="button button-block button-positive" ng-click="buscar()">
-      Buscar Carros
-    </button>
-    
-    <button class="button button-block button-positive" ng-click="addCarrito()">
-      Add Carrito
-    </button>
-    
-    </ion-list>
-    
-    <ion-list>
-      <ion-item ng-repeat="device in devices" >
-        <p>{{device.name}}</p>
-      </ion-item>
-    </ion-list>
-    
-    
-     <div class="row">
-        <button class ="button button-block button-positive">
-         Buscar nuevo Dispositivo 
-         </button>
+     <div class="list">
+       <div class="item">
+          <h2>Carritos CC</h2>
+       </div>
+       
+       <div class="item">
+          <button class="button button-block button-positive" ng-click="conectar()">
+            Buscar Carros
+          </button>
+        </div>
+      <div class="item">
+        <ion-list>
+          <ion-item ng-repeat="device in conectados" >
+            <p>{{device.id}}</p>
+            <p>{{device.name}}</p>
+          </ion-item>
+        </ion-list>
+        </div>
       </div>
-	  
-    
-    
-    <div class="list card" >
-		
-      <div class="item item-avatar">
-        <h2>Nuevo carrito</h2>
-        
-      </div>
-      
-      <div class="item item-body">
-      <img class="full-image" src="https://www.quia.com/files/quia/users/mackymitma/Juguetes/carro3.gif">
-      </div>
-      
-      <label class="item item-input">
-        <input type="text" placeholder="Nombre del carro">
-      </label>
-		
-      <label class="item item-input">
-        <input type="text" placeholder="Nombre del carro">
-      </label>
-    
-	   </div>
-    
-    
   </ion-content>
 </ion-view>

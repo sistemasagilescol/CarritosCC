@@ -1,5 +1,45 @@
 angular.module('starter.services', [])
 
+.service('Servicio',function(){
+   var Dispositivos= [];
+  
+  this.datos=function(){
+    ble.scan(
+          [],2,
+          function(device){
+            Dispositivos.push(device);
+          },
+          function(err){
+            //alert('Scanning failed. Please try again.');
+          }
+        );
+    
+    return Dispositivos;
+  };
+  
+})
+
+.factory('GobackFact',function($q){
+    return {
+        getMessage: function(){
+          var Dispositivos= [];
+          
+          ble.scan(
+          [],2,
+          function(device){
+            Dispositivos.push(device);
+          },
+          function(err){
+            //alert('Scanning failed. Please try again.');
+          }
+        );
+          
+          return $q.when(Dispositivos);
+        }
+    };
+}
+)
+
 .factory('Chats', function() {
   // Might use a resource here that returns a JSON array
 
