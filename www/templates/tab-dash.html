@@ -12,14 +12,23 @@
             Buscar Carros
           </button>
         </div>
+        
       <div class="item">
         <ion-list>
-          <ion-item ng-repeat="device in conectados" >
+          <ion-item ng-repeat="device in devices" >
             <p>{{device.id}}</p>
             <p>{{device.name}}</p>
+            <p>{{device.rssi}}</p>
           </ion-item>
         </ion-list>
         </div>
+        
+         <div class="item">
+          <button class="button button-block button-positive" ng-click="parar()">
+            Parar Busqueda
+          </button>
+        </div>
+        
       </div>
   </ion-content>
 </ion-view>

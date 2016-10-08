@@ -71,12 +71,7 @@ angular.module('starter', ['ionic', 'ionic.cloud','starter.controllers', 'starte
     views: {
       'tab-dash': {
         templateUrl: 'templates/tab-dash.html',
-        controller: 'DashCtrl',
-        resolve: {
-          message: function(GobackFact){
-                return GobackFact.getMessage();
-        } 
-        }  
+        controller: 'DashCtrl'  
       }
     }
   })
@@ -90,6 +85,7 @@ angular.module('starter', ['ionic', 'ionic.cloud','starter.controllers', 'starte
         }
       }
     })
+    
     .state('tab.chat-detail', {
       url: '/chats/:chatId',
       views: {
