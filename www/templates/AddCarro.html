@@ -17,8 +17,6 @@
         </ion-list>
      </div>
     
-    
-    
      <div class="list card" ng-hide="Mostrar">
 		
       <div class="item item-avatar">
@@ -30,7 +28,7 @@
       </div>
       
       <label class="item item-input" >
-        <input type="text" placeholder="Nombre del carro" ng-model="carro.IDcarro" ng-disabled="deshabilitado">
+        <input type="text" placeholder="Nombre del carro" ng-model="carro.id" ng-disabled="deshabilitado">
       </label>
 		
       <label class="item item-input">
@@ -38,7 +36,7 @@
       </label>
     
         <button class="button button-block button-positive" ng-click="addCarro()">
-          Agregar
+          {{carro.string}}
        </button> 
     
 	   </div>
