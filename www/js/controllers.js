@@ -3,7 +3,7 @@ angular.module('starter.controllers', [])
 .controller('DashCtrl', function($scope,$firebaseArray,$state, $interval,DeviceFactory) {
 
  $scope.devices= []; 
- 
+ /*
  $scope.servicio={
     IdServicio:'',
     carroId:'',
@@ -11,17 +11,14 @@ angular.module('starter.controllers', [])
     HoraInicio: '',
     HoraFin: '',
     Tarifa:0
-  }
+  }*/
  
-  var Servicios; 
-  var ServiciosDB;
- var dispositivos = new Firebase("https://carritoscc.firebaseio.com/Dispositivos");
+  var dispositivos = new Firebase("https://carritoscc.firebaseio.com/Dispositivos");
   var carritosDB=$firebaseArray(dispositivos);
- 
-  $scope.contador=0;
-  var timer;
+  //$scope.contador=0;
+  //var timer;
   
-$scope.IniciarContador=function(segundos){
+/*$scope.IniciarContador=function(segundos){
     
       timer = $interval(function() {
             $scope.contador++;
@@ -31,11 +28,30 @@ $scope.IniciarContador=function(segundos){
  
  $scope.pararContador=function(){
    $interval.cancel(timer);
- };
+ };*/
  
- $scope.reset=function(){
+ /*$scope.reset=function(){
    $scope.contador=0;
- };
+ };*/
+ 
+ 
+ $scope.obtenerHoraInicio=function(horaFinal,minutosFinal,tiempoDuracion){
+   
+     var demora=(tiempoDuracion/60)/60;
+     
+     var horaActual = horaFinal+(minutosFinal/60);
+     
+     var diferencia=horaActual-demora;
+     
+     var horas=Math.floor(diferencia);
+     
+     var minutos=diferencia-Math.floor(diferencia);
+     
+     var minutosFinales=Math.floor(minutos*60);
+     
+   return horas+":"+minutosFinales;
+ }
+ 
  
   $scope.ManejoServicio=function(){
     
@@ -60,9 +76,9 @@ $scope.IniciarContador=function(segundos){
                       });
               },
               function(err){
-                $scope.$apply(function() {
+                $scope.$apply(function(){
                           alert("Failed");
-                      });
+                      }); 
               }
             );
            
@@ -73,46 +89,51 @@ $scope.IniciarContador=function(segundos){
                   
                   $scope.$apply(function(){
                     
-                    var temporal=DeviceFactory.getDevices();
+                    //var temporal=DeviceFactory.getDevices();
                     
-                    var temporalDB=carritosDB;
+                    //var temporalDB=carritosDB;
                     
-                    angular.forEach(temporalDB,function(value,key){
+                    angular.forEach(carritosDB,function(value,key){
                       var dbValue=value;
-                      var noEnt=true;
+                      //var noEnt=true;
                       
-                        angular.forEach(temporal,function(value,key){
-                          var localValue=value;
-                          
-                          if(noEnt){
+                      var idFound=DeviceFactory.getIndex(dbValue);
+                      
+                      if(idFound != -1){
+                        
+                        dbValue.Estado="Parqueado";
+                        var precio= (dbValue.Timer/60)*1000;
+                        
+                          if(precio!=0 && dbValue.Timer>1){
+                            
+                            var nref2 = new Firebase("https://carritoscc.firebaseio.com/Dispositivos/" +dbValue.$id+"/Servicios/");
+                            //var carritosDB=$firebaseArray(dispositivos);
+                              var postsRef=$firebaseArray(nref2);
                               
-                              if(dbValue.id==localValue.id){
-                                //dbValue.Estado="Parqueado";
-                               // localValue.Estado="Parqueado";
-                                noEnt=false;
-                              }else{
-                                
-                                //dbValue.Estado="Servicio";
-                                //localValue.Estado="Servicio";
-                              }
+                             var dat=new Date();
+                            /* var CurrentDate=dat.getDay()+"-"+ meses[dat.getMonth()]+"-"+dat.getFullYear();
+                             var hora=dat.getHours();
+                             var minutos=dat.getMinutes();
+                             var Horainicial= $scope.obtenerHoraInicio();
+                              */
+                              
+                             postsRef.$add({
+                                      Fecha: dat.getDay()+"-"+dat.getMonth()+"-"+dat.getFullYear(),
+                                      horainicio: dat.getHours(),
+                                      horafinal: dat.getHours()+":"+dat.getMinutes(),//hora +":"+minutos,
+                                      duracion: Math.round((dbValue.Timer/60) * 100) / 100 ,
+                                      Cobro: precio
+                                    }); 
+                            
                           }
-                          
-                        });
-                        
-                        if(noEnt == false){
-                           dbValue.Estado="Parqueado";
-                           dbValue.Timer=0;
-                           //$scope.reset();
-                        }else{
-                          dbValue.Estado="Servicio";
-                          dbValue.Timer++;
-                          $scope.IniciarContador();
-                          //ServiciosDB.$add($scope.carro);
-                        }
-                        
+                          dbValue.Timer=0;
+                      }else{
+                        dbValue.Estado="Servicio";
+                        dbValue.Timer++;
+                      } 
                     });
                     //cod here to update in apply methos
-                     $scope.devices=temporalDB;
+                     $scope.devices=carritosDB;
                      DeviceFactory.reset();
                   });
                   
@@ -128,9 +149,6 @@ $scope.IniciarContador=function(segundos){
        DeviceFactory.reset();
        
        $scope.devices=DeviceFactory.getDevices();
-       
-       Servicios=new Firebase("https://carritoscc.firebaseio.com/servicios");
-       ServiciosDB= $firebaseArray(Servicios);
        
        $scope.ManejoServicio();
  };
@@ -148,23 +166,46 @@ $scope.IniciarContador=function(segundos){
  
 })
 
-.controller('ChatsCtrl', function($scope, Chats,$state,$firebaseArray) {
+.controller('ChatsCtrl', function($scope, DBCarr,$state,$firebaseArray) {
   
-  var Servicios = new Firebase("https://carritoscc.firebaseio.com/servicios");
-  var ServiciosDB= $firebaseArray(Servicios);
-  
-  
-  
-  
-  
-  $scope.gob=function(){
+      //var dispositivos = new Firebase("https://carritoscc.firebaseio.com/Dispositivos");
+     // $scope.Carros= $firebaseArray(dispositivos);
+      
+      $scope.Carros=DBCarr.ObtenerCarros();
     
-  };
-
-  $scope.chats = Chats.all();
-  $scope.remove = function(chat) {
+  //$scope.chats = Chats.all();
+  /* $scope.remove = function(chat) {
     Chats.remove(chat);
-  };
+  };*/
+  
+})
+
+.controller('DetalleDispCtrl',function($scope,$stateParams,$firebaseArray,DBCarr){
+
+  // $scope.dispositivo=$stateParams.dispId;
+   
+   $scope.Carro=DBCarr.getCar($stateParams.dispId);
+   $scope.dispositivo=$scope.Carro.Nombre;
+   
+   $scope.servicios=  $scope.Carro.Servicios;
+   
+   
+   /*var demora=(1680/60)/60;
+     
+     var horaActual = dat.getHours()+(dat.getMinutes()/60);
+     
+     var diferencia=horaActual-demora;
+     
+     var horas=Math.floor(diferencia);
+     
+     var minutos=diferencia-Math.floor(diferencia);
+     
+     var minutosFinales=Math.floor(minutos*60);
+     
+     alert(dat.getDay()+"-"+ meses[dat.getMonth()]+"-"+dat.getFullYear());
+     
+   }*/
+    
 })
 
 .controller('ChatDetailCtrl', function($scope, $stateParams, Chats) {
@@ -180,8 +221,6 @@ $scope.IniciarContador=function(segundos){
   
   $scope.nuevosCarros=[];
   $scope.deshabilitado=true;
-  
-
   
   $scope.carro={};
   
@@ -252,6 +291,7 @@ $scope.IniciarContador=function(segundos){
   var dispositivos = new Firebase("https://carritoscc.firebaseio.com/Dispositivos");
      
   $scope.DispositivosBLE = $firebaseArray(dispositivos);
+  
   
   $scope.nuevoDispositivo=function(){
     $state.go("tab.AddCarro");

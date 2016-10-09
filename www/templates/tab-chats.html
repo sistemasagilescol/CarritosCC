@@ -1,24 +1,26 @@
-<ion-view view-title="Chats">
+<ion-view view-title="Servicios">
   <ion-content>
-    <ion-list>
-      <ion-item>
+    <div class="list">
+      
+    
          <div class="item">
             <h1>CarMonitor</h1>
           </div>
-      </ion-item>
       
-     
       
-      <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="chat in chats" type="item-text-wrap" href="#/tab/chats/{{chat.id}}">
-        <img ng-src="{{chat.face}}">
-        <h2>{{chat.name}}</h2>
-        <p>{{chat.lastText}}</p>
-        <i class="icon ion-chevron-right icon-accessory"></i>
-
-        <ion-option-button class="button-assertive" ng-click="remove(chat)">
-          Delete
-        </ion-option-button>
-      </ion-item>
-    </ion-list>
+      
+     <div clas="item">
+      <div class="list">
+          <a class="item item-thumbnail-left" ng-repeat="carrito in Carros"  href="#/tab/chats/{{carrito.id}}">
+            <img src="http://2.bp.blogspot.com/-f11JhmfuMXg/Td-gErSevkI/AAAAAAAAQkM/W_maOJDDhIY/s1600/imageninfantilparaimprimir3.jpg">
+            <h2>{{carrito.id}}</h2>
+            <p>{{carrito.Nombre}}</p>
+          </a>
+       </div>   
+    </div>
+    
+    
+    
+    </idiv>
   </ion-content>
 </ion-view>

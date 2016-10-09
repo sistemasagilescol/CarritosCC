@@ -1,4 +1,4 @@
-<ion-view view-title="Dashboard">
+<ion-view view-title="ActualServicio">
   
   <ion-content>
     
@@ -16,8 +16,8 @@
       <div class="item">
         <ion-list>
           <ion-item ng-repeat="device in devices" >
-            <p>{{device.id}}</p>
-            <p>{{device.name}}</p>
+            <p>{{device.Nombre}}</p>
+            <p>{{device.nombre}}</p>
             <p>{{device.rssi}}</p>
             <p>{{device.Estado}}</p>
             <p>{{device.Timer}}</p>
@@ -25,11 +25,11 @@
         </ion-list>
         </div>
         
-         <div class="item">
+       <!--  <div class="item">
           <button class="button button-block button-positive" ng-click="parar()">
             Parar Busqueda
           </button>
-        </div>
+        </div>-->
         
       </div>
   </ion-content>

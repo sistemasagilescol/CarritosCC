@@ -86,6 +86,17 @@ angular.module('starter', ['ionic', 'ionic.cloud','starter.controllers', 'starte
       }
     })
     
+    .state('tab.DispDetail',{
+    url: '/chats/:dispId',
+    views: {
+      'tab-chats' : {
+          templateUrl: 'templates/dispositivo-detail.html',
+          controller: 'DetalleDispCtrl'
+      }
+    }
+    })
+    
+    
     .state('tab.chat-detail', {
       url: '/chats/:chatId',
       views: {
