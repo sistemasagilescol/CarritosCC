@@ -172,11 +172,48 @@ angular.module('starter.controllers', [])
      // $scope.Carros= $firebaseArray(dispositivos);
       
       $scope.Carros=DBCarr.ObtenerCarros();
-    
   //$scope.chats = Chats.all();
-  /* $scope.remove = function(chat) {
-    Chats.remove(chat);
-  };*/
+   $scope.EnviarCorreo = function() {
+     
+     var mensaje="";
+     var i;
+     var i2;
+     
+     var fecha=new Date();
+   
+   
+     
+    /* for(i=0;i<$scope.Carros.length;i++){
+       var servicios=$scope.Carros[i].Servicios;
+        mensaje=mensaje+"\n Servicio, Dispositivo "+$scope.Carros[i].Nombre +" : \n";
+       // alert(mensaje);
+        alert(servicios.length);
+       for (i2=0;i2<servicios.length;i2++){
+         alert((fecha.getDay()+"-"+fecha.getMonth()+"-"+fecha.getFullYear()));
+         if((fecha.getDay()+"-"+fecha.getMonth()+"-"+fecha.getFullYear())==servicios[i2].Fecha){
+           mensaje=mensaje+" Fecha: "+servicios[i2].Fecha+"\n";
+           mensaje=mensaje+" Hora Servicio: "+ servicios[i2].horafinal+"\n";
+           mensaje=mensaje+" Duración Servicio: "+ servicios[i2].duracion+"\n";
+           alert(mensaje);
+         }
+       }
+     }*/
+     
+     
+       /* if(window.plugins && window.plugins.emailComposer) {
+            window.plugins.emailComposer.showEmailComposerWithCallback(function(result) {
+                console.log("Response -> " + result);
+            }, 
+            "Consolidado dia", // Subject
+            mensaje,                      // Body
+            ["sistemasagilescol@gmail.com"],    // To
+            null,                    // CC
+            null,                    // BCC
+            false,                   // isHTML
+            null,                    // Attachments
+            null);                   // Attachment Data
+        }*/
+  };
   
 })
 
