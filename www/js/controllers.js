@@ -249,24 +249,31 @@ angular.module('starter.controllers', [])
   $scope.chat = Chats.get($stateParams.chatId);
 })
 
-.controller('NuevoCarroCtrl', function($scope,$firebaseArray,$state,$timeout,DeviceFactory){
+.controller('NuevoCarroCtrl', function($scope,$firebaseArray,$state,$timeout,DeviceFactory,DBCarr){
   
-  var dispositivos = new Firebase("https://carritoscc.firebaseio.com/Dispositivos");
-  var carritosDB=$firebaseArray(dispositivos);
+  //var dispositivos = new Firebase("https://carritoscc.firebaseio.com/Ubicacion/Premium Plaza/Dispositivos");
+  //var carritosDB=$firebaseArray(dispositivos);
+  
+  //var carritosDB=DBCarr.ObtenerCarros();
   
   $scope.Mostrar=true;
   
-  $scope.nuevosCarros=[];
-  $scope.deshabilitado=true;
+  //$scope.nuevosCarros=[];
+  //$scope.deshabilitado=true;
   
   $scope.carro={};
   
   $scope.buscarNuevoCarro=function(){
        //$scope.nuevosCarros=CarritosDB.escanearCarros(2000);
         ble.startScan([],function(device){
-          
-           $scope.nuevosCarros.push(device);
-          
+            
+           if(DBCarr.getCar(device.id) == null && $scope.Mostrar){
+                $scope.$apply(function(){
+                  $scope.carro.id=device.id;
+                  $scope.Mostrar=false;
+              });
+           }
+           
             },function(err){
               
             });
@@ -274,7 +281,7 @@ angular.module('starter.controllers', [])
                     ble.stopScan,
                     1500,
                     function(){
-                      $scope.$apply(function(){
+                     /* $scope.$apply(function(){
                         
                           var auxiliar=[];
                           var i;
@@ -286,7 +293,6 @@ angular.module('starter.controllers', [])
                               
                               if(valueFire.id != valueLocal.id){
                                 auxiliar.push(valueLocal);
-                                
                               }
                               
                             });
@@ -301,35 +307,30 @@ angular.module('starter.controllers', [])
                         $state.go($state.current,{},{reload:true});
                           }else
                             alert("No hay dispositivos disponibles para agregar");
-                        
-                      });
+                      });*/
                     },
                     function(){
-                      // Stopping scan failed
                     }
       );    
   };
   
   
   $scope.addCarro=function(){
-    
-    
-     carritosDB.$add($scope.carro);
-   // CarritosDB.addCarrito($scope.carro);
-    $state.go("tab.Dispositivos");
+   // alert($scope.carro.tipo);
+    // carritosDB.$add($scope.carro);
+   // 
+   DBCarr.addCarro($scope.carro);
+   $state.go("tab.Dispositivos");
   };
   
   
 })
 
 
-.controller('DispositivosCtrl', function($scope,$firebaseArray,$state) {
+.controller('DispositivosCtrl', function($scope,$firebaseArray,$state,DBCarr) {
   //Apuntador principal
-  var dispositivos = new Firebase("https://carritoscc.firebaseio.com/Dispositivos");
-     
-  $scope.DispositivosBLE = $firebaseArray(dispositivos);
-  
-  
+   $scope.DispositivosBLE=DBCarr.ObtenerCarros();
+   
   $scope.nuevoDispositivo=function(){
     $state.go("tab.AddCarro");
   }

@@ -28,15 +28,33 @@
       </div>
       
       <label class="item item-input" >
-        <input type="text" placeholder="Nombre del carro" ng-model="carro.id" ng-disabled="deshabilitado">
+        <input type="text" placeholder="ID Carro" ng-model="carro.id" >
       </label>
 		
       <label class="item item-input">
         <input type="text" placeholder="Nombre del carro" ng-model="carro.Nombre">
       </label>
-    
+      
+          <label class="item item-input item-select" >
+            <div class="input-label">
+              Tipo de carrito
+            </div>
+            
+            <select ng-model="carro.tipo">
+              <option>Carro manual</option>
+              <option selected>Carro Electrico</option>
+              <option>Camioneta</option>
+            </select>
+            
+          </label>
+         
+         <label class="item item-input">
+          <input type="text" placeholder="Precio Carro" ng-model="carro.Precio">
+        </label>
+         
+         
         <button class="button button-block button-positive" ng-click="addCarro()">
-          {{carro.string}}
+          Agregar
        </button> 
     
 	   </div>

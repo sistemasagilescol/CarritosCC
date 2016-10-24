@@ -61,17 +61,19 @@ angular.module('starter.services', [])
 
 .factory('DBCarr',function($firebaseArray){
   
-   var dispositivos = new Firebase("https://carritoscc.firebaseio.com/Dispositivos");
+   var dispositivos = new Firebase("https://carritoscc.firebaseio.com/Ubicacion/Premium Plaza/Dispositivos");
    var carritosDB=$firebaseArray(dispositivos);
+   
   return {
     ObtenerCarros : function(){
        return carritosDB;
     },
-    
+    addCarro:function(carro){
+      carritosDB.$add(carro);
+    },
     getCar: function(id){
       var i;
       var CarroEncontrado;
-      
       
       for (i=0;i<carritosDB.length;i++){
         if(carritosDB[i].id == id){
