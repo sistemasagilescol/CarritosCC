@@ -1,0 +1,60 @@
+<ion-view view-title="NuevoUsuario">
+  <ion-content>
+	  
+     <div class="list list-inset">
+
+         <label class="item item-input">
+          <input type="text" placeholder="Nombre" ng-model="nuevoUsuario.nombre">
+        </label>
+        
+        <label class="item item-input">
+          <input type="text" placeholder="Apellido" ng-model="nuevoUsuario.apellido">
+        </label>
+        
+        <label class="item item-input">
+          <input type="text" placeholder="Usuario" ng-model="nuevoUsuario.usuario">
+        </label>
+        
+        <label class="item item-input">
+          <input type="text" placeholder="Contrasena" ng-model="nuevoUsuario.contrasena">
+        </label>
+        
+       <label class="item item-input item-select" >
+            <div class="input-label">
+              Centro comercial
+            </div>
+            
+            <select ng-model="nuevoUsuario.centroComercial">
+              <option>Premium Plaza</option>
+              <option selected>Mayorca</option>
+              <option>Yopal</option>
+              <option>Guajira</option>
+            </select>
+            
+          </label>
+        
+        <label class="item item-input item-select" >
+           
+            <div class="input-label">
+              Rol
+            </div>
+            
+            <select ng-model="nuevoUsuario.rol">
+              <option>Admin</option>
+              <option selected>Empleado</option>
+            </select>
+            
+          </label>
+        
+         <button class="button button-block button-positive" ng-click="guardarUsuario()">
+           Guardar Usuario
+         </button>
+         
+        <button class="button button-block button-positive" ng-click="Cancelar()">
+            Cancelar
+          </button>
+          
+    </div>
+    
+  </ion-content>
+</ion-view>

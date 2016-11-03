@@ -1,4 +1,4 @@
-<ion-view view-title="ActualServicio">
+<ion-view view-title="ActualServicio" >
   
   <ion-content>
     
@@ -14,22 +14,28 @@
         </div>
         
       <div class="item">
+      
         <ion-list>
           <ion-item ng-repeat="device in devices" >
             <p>{{device.Nombre}}</p>
-            <p>{{device.nombre}}</p>
-            <p>{{device.rssi}}</p>
             <p>{{device.Estado}}</p>
-            <p>{{device.Timer}}</p>
+            <!-- <p>{{device.rssi}}</p>
+            <p>{{device.Estado}}</p>
+            <p>{{device.timer}}</p>
+            <p>{{device.HoraInicio}}</p>
+            <p>{{device.HoraFin}}</p>-->
+           <ion-toggle  ng-model="device.Mantenimiento" 
+                    ng-checked="true">Fuera de servicio</ion-toggle>
           </ion-item>
         </ion-list>
+        
         </div>
         
-       <!--  <div class="item">
+        <div class="item">
           <button class="button button-block button-positive" ng-click="parar()">
-            Parar Busqueda
+           Finalizar Sesion
           </button>
-        </div>-->
+        </div>
         
       </div>
   </ion-content>

@@ -8,24 +8,25 @@
       </div>
     
       <div class="item">
-          <h4>Nombre: {{Carro.Nombre}}</h4>
+          <h4>CARRITO: {{Carro.Nombre}}</h4>
       </div>
       
       <div class="item">
         
         <div class="list">
-           <a class="item" ng-repeat="servicio in servicios">
-            <p>Fecha del servicio: {{servicio.Fecha}}</p>
-            <p>Hora Final servicio: {{servicio.horafinal}}</p>
-            <p>Hora Inicial Servicio: {{servicio.horainicio}}</p>
+           <a class="item" ng-repeat="servicio in Servicios">
+            <p>Fecha del servicio: {{servicio.fecha}}</p>
+            <p>Hora Inicial Servicio: {{servicio.horaInicial}}</p>
+            <p>Hora Final servicio: {{servicio.horaFinal}}</p>
             <p>Duración del servicio: {{servicio.duracion}} min</p>
-            <p>Total a cobrar: {{servicio.Cobro | currency}}</p>
+            <p>Total a cobrar: {{servicio.cobro | currency}}</p>
            <!-- <p>{{carrito.Nombre}}</p>-->
             </a>
           
          </div>
         
       </div>
+      
       <div>
   </ion-content>
 </ion-view>

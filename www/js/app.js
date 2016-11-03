@@ -56,12 +56,19 @@ angular.module('starter', ['ionic', 'ionic.cloud','starter.controllers', 'starte
   // Set up the various states which the app can be in.
   // Each state's controller can be found in controllers.js
   $stateProvider
-
+    
+    .state('login',{
+      url: "/login",
+      templateUrl:"templates/Login.html",
+      controller: 'loginCtrl'
+    })
+    
   // setup an abstract state for the tabs directive
     .state('tab', {
     url: '/tab',
     abstract: true,
-    templateUrl: 'templates/tabs.html'
+    templateUrl: 'templates/tabs.html',
+    controller: 'GeneralCtrl'
   })
 
   // Each tab has its own nav history stack:
@@ -85,6 +92,34 @@ angular.module('starter', ['ionic', 'ionic.cloud','starter.controllers', 'starte
         }
       }
     })
+    
+    //Backend Usuarios
+    .state('tab.Usuarios', {
+      url: '/Usuarios',
+      views: {
+        'Usuarios': {
+          templateUrl: 'templates/Usuarios.html',
+          controller: 'UsuariosCtrl'
+        }
+      }
+    })
+    
+     .state('tab.NuevoUsuario',{
+    url: '/NuevoUsuario',
+    views: {
+      'Usuarios' : {
+          templateUrl: 'templates/NuevoUsuario.html',
+          controller: 'UsuariosCtrl'
+      }
+    }
+    })
+    
+//Final backEnd Usuarios    
+    
+    //Backend Centro Comerciales
+    
+    //Final backend centros comerciales
+    
     
     .state('tab.DispDetail',{
     url: '/chats/:dispId',
@@ -140,6 +175,6 @@ angular.module('starter', ['ionic', 'ionic.cloud','starter.controllers', 'starte
   
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/tab/dash');
-
+  //$urlRouterProvider.otherwise('/tab/dash');
+  $urlRouterProvider.otherwise('/login');
 });

@@ -1,77 +1,149 @@
 angular.module('starter.controllers', [])
 
-.controller('DashCtrl', function($scope,$firebaseArray,$state, $interval,DeviceFactory) {
 
- $scope.devices= []; 
- /*
- $scope.servicio={
-    IdServicio:'',
-    carroId:'',
-    FechaServicio:'',
-    HoraInicio: '',
-    HoraFin: '',
-    Tarifa:0
-  }*/
- 
-  var dispositivos = new Firebase("https://carritoscc.firebaseio.com/Dispositivos");
-  var carritosDB=$firebaseArray(dispositivos);
-  //$scope.contador=0;
-  //var timer;
+.controller('loginCtrl',function($scope,$firebaseArray,$state,DBCarr,SESION,usuarioServicio){
   
-/*$scope.IniciarContador=function(segundos){
+  $scope.loginData={};
+  
+  $scope.login=function(){
+    //alert($scope.loginData.username);
+    var usuario=usuarioServicio.obtenerUsuario($scope.loginData.username,$scope.loginData.password)
     
-      timer = $interval(function() {
-            $scope.contador++;
-          }, 1000);
-          
-    };
- 
- $scope.pararContador=function(){
-   $interval.cancel(timer);
- };*/
- 
- /*$scope.reset=function(){
-   $scope.contador=0;
- };*/
- 
- 
- $scope.obtenerHoraInicio=function(horaFinal,minutosFinal,tiempoDuracion){
+    if( usuario != null){
+      
+      SESION.data=usuario;
+     
+      $state.go('tab.dash');
+    }else{
+      alert("Usuario o contraseña incorrecta");
+    }
+  }
+  
+})
+
+.controller('GeneralCtrl',function($scope,$firebaseArray,$state,DBCarr){
+  
+  $scope.esconder=false;
+  
+})
+
+
+
+
+.controller('UsuariosCtrl',function($scope,$firebaseArray,$state,usuarioServicio,SESION){
+  
+  $scope.esconder=true;
+  $scope.mensajePermiso="";
+  
+  if(SESION.data.rol == "Admin"){
+    $scope.esconder=false;
+  }else{
+    $scope.esconder=true;
+    $scope.mensajePermiso="NO TIENES PERMISOS DE VER ESTA VISTA";
+  }
+  
+  $scope.listaUsuarios=usuarioServicio.obtenerUsuarios();
+  
+  $scope.nuevoUsuario={};
+  
+  $scope.guardarUsuario=function(){
    
-     var demora=(tiempoDuracion/60)/60;
-     
-     var horaActual = horaFinal+(minutosFinal/60);
-     
-     var diferencia=horaActual-demora;
-     
-     var horas=Math.floor(diferencia);
-     
-     var minutos=diferencia-Math.floor(diferencia);
-     
-     var minutosFinales=Math.floor(minutos*60);
-     
-   return horas+":"+minutosFinales;
+    $scope.nuevoUsuario.path="https://carritoscc.firebaseio.com/Ubicacion/" + $scope.nuevoUsuario.centroComercial;
+    
+    usuarioServicio.GuardarUsuario($scope.nuevoUsuario);
+     $state.go('tab.Usuarios');
+  } 
+  
+ $scope.Cancelar=function(){
+    $state.go('tab.Usuarios');
+  } 
+ 
+ $scope.addUsuario=function(){
+   $state.go('tab.NuevoUsuario');
  }
  
+})
+
+.controller('DashCtrl', function($scope,$firebaseArray,$state,SESION,Tarifas,$interval,DeviceFactory,DBCarr,Lista) {
+
+ DBCarr.data(SESION.data.centroComercial);
+ 
+ function calculoMinutos(horaInicial,minutosInicial,horaFinal,minutosFinal){
+   
+   var hora=((horaFinal*60)+minutosFinal)-((horaInicial*60)+minutosInicial);
+   
+   return hora;
+ }
+ 
+ // var dispositivos = new Firebase("https://carritoscc.firebaseio.com/Dispositivos");
+ DeviceFactory.setDevices (DBCarr.ObtenerCarros());
+ 
+ $scope.devices= DeviceFactory.getDevices();
  
   $scope.ManejoServicio=function(){
     
         $interval(function () {
           
+          Lista.reset();
            ble.startScan(
               [],
               function(device){
                     $scope.$apply(function() {
                     
                      if(device.name == "ITAG"){
-                       var indexCarrito=DeviceFactory.getIndex(device);
-                            if(indexCarrito ==-1 || $scope.devices.length == 0){
-                              DeviceFactory.addDevice(device);
-                              //$scope.devices = DeviceFactory.getDevices();
-                            }else{
-                              $scope.devices[indexCarrito].rssi=device.rssi;
-                             // DeviceFactory.setDevices( $scope.devices);
+                       //var indexCarrito=DeviceFactory.getIndex(device);
+                       var carrito=DeviceFactory.getDevice(device.id);
+                       var t=new Date();
+                        
+                            if(carrito!= null && carrito.Mantenimiento && device.rssi > -100){
+                              carrito.rssi=device.rssi;
+                             // Lista.addDevice(carrito);
+                              if(carrito.Estado == "Servicio"){
+                                 
+                                 carrito.HoraFin= t.getHours() + " : " + t.getMinutes();
+                                 var inicio=carrito.HoraInicio+" : " + carrito.MinutosInicio;
+                                 var dat=t.getDate() +"/"+ (t.getMonth()+1)+"/"+ t.getFullYear();
+                                 
+                                 var minutosServicio=calculoMinutos(carrito.HoraInicio
+                                  ,carrito.MinutosInicio
+                                 ,t.getHours(),t.getMinutes()
+                                 );
+                                 
+                                 var pago=0;
+                                 
+                                 switch(SESION.data.centroComercial){
+                                   case "Guajira":
+                                      pago=Tarifas.guaj(minutosServicio,carrito.tipo);
+                                      break;
+                                   case "Mayorca":
+                                      pago=Tarifas.mayor(minutosServicio,carrito.tipo);
+                                    break;
+                                    case "Premium Plaza":
+                                      pago=Tarifas.prem(minutosServicio,carrito.tipo);
+                                    break;
+                                    case "Yopal":
+                                      pago=Tarifas.yop(minutosServicio,carrito.tipo);
+                                    break;
+                                 }
+                                 
+                                 var objeto={cobro:pago,
+                                 fecha:dat,duracion:minutosServicio,horaInicial:inicio,
+                                 horaFinal:carrito.HoraFin};
+                                 
+                                  DBCarr.addService(carrito.$id,objeto,SESION.data.centroComercial);
+                                
+                                 carrito.timer=0;
+                              }else if(carrito.Estado == "Estacionado"){
+                                carrito.timer=0;
+                              }
+                              
+                              carrito.timer=0;
+                              carrito.Analizado=true;
+                              carrito.Estado="Estacionado";
+                              carrito.HoraInicio=t.getHours() ;//+ " : " + t.getMinutes();
+                              carrito.MinutosInicio=t.getMinutes();
+                              
                             }
-                            
                      }
                       });
               },
@@ -84,95 +156,65 @@ angular.module('starter.controllers', [])
            
            setTimeout(
                 ble.stopScan,
-                1000,
+                1500,
                 function(){
                   
-                  $scope.$apply(function(){
+                  angular.forEach($scope.devices,function(value,key){
+                    var carrito=Lista.getDevice(value.id);
+                    //var carrito=DeviceFactory.getDevice(value.id);
                     
-                    //var temporal=DeviceFactory.getDevices();
-                    
-                    //var temporalDB=carritosDB;
-                    
-                    angular.forEach(carritosDB,function(value,key){
-                      var dbValue=value;
-                      //var noEnt=true;
+                    if(value.Analizado == false && value.Mantenimiento && value.Estado != "DB"){
+                      // var t=new Date();
+                      value.timer++;
+                      if(value.timer>10){
+                        value.Estado="Servicio";
+                      }
                       
-                      var idFound=DeviceFactory.getIndex(dbValue);
-                      
-                      if(idFound != -1){
-                        
-                        dbValue.Estado="Parqueado";
-                        var precio= (dbValue.Timer/60)*1000;
-                        
-                          if(precio!=0 && dbValue.Timer>1){
-                            
-                            var nref2 = new Firebase("https://carritoscc.firebaseio.com/Dispositivos/" +dbValue.$id+"/Servicios/");
-                            //var carritosDB=$firebaseArray(dispositivos);
-                              var postsRef=$firebaseArray(nref2);
-                              
-                             var dat=new Date();
-                            /* var CurrentDate=dat.getDay()+"-"+ meses[dat.getMonth()]+"-"+dat.getFullYear();
-                             var hora=dat.getHours();
-                             var minutos=dat.getMinutes();
-                             var Horainicial= $scope.obtenerHoraInicio();
-                              */
-                              
-                             postsRef.$add({
-                                      Fecha: dat.getDay()+"-"+dat.getMonth()+"-"+dat.getFullYear(),
-                                      horainicio: dat.getHours(),
-                                      horafinal: dat.getHours()+":"+dat.getMinutes(),//hora +":"+minutos,
-                                      duracion: Math.round((dbValue.Timer/60) * 100) / 100 ,
-                                      Cobro: precio
-                                    }); 
-                            
-                          }
-                          dbValue.Timer=0;
-                      }else{
-                        dbValue.Estado="Servicio";
-                        dbValue.Timer++;
-                      } 
-                    });
-                    //cod here to update in apply methos
-                     $scope.devices=carritosDB;
-                     DeviceFactory.reset();
+                    }else if(value.Mantenimiento == false){
+                       value.Estado="Mantenimiento";
+                       value.timer=0;
+                    }
+                    
+                    value.Analizado = false;
+                    
                   });
                   
                 },
                 function(){
                 }
             );
-        }, 1500);
+        }, 2000);
   };
   
  $scope.conectar=function(){
         
-       DeviceFactory.reset();
-       
-       $scope.devices=DeviceFactory.getDevices();
-       
+      // DeviceFactory.reset();
+       //$window.location.reload();
        $scope.ManejoServicio();
  };
  
  $scope.parar=function(){
-   ble.stopScan(function(){
-     $scope.devices = DeviceFactory.getDevices();}, 
-   function(){
-     
-   });
+   if (confirm('Seguro quieres cerrar la app ')) {
+      ionic.Platform.exitApp(); 
+      window.close();
+    }
  };
- 
- //Nuevo interface
- 
  
 })
 
-.controller('ChatsCtrl', function($scope, DBCarr,$state,$firebaseArray) {
+.controller('ChatsCtrl', function($scope, DBCarr,$state,$firebaseArray,SESION) {
   
-      //var dispositivos = new Firebase("https://carritoscc.firebaseio.com/Dispositivos");
-     // $scope.Carros= $firebaseArray(dispositivos);
+  
+   $scope.esconder=true;
+  
+    if(SESION.data.rol == "Admin"){
+      $scope.esconder=false;
+    }else{
+      $scope.esconder=true;
+    }
+  
+   $scope.Carros=DBCarr.ObtenerCarros();
       
-      $scope.Carros=DBCarr.ObtenerCarros();
-  //$scope.chats = Chats.all();
    $scope.EnviarCorreo = function() {
      
      var mensaje="";
@@ -180,68 +222,17 @@ angular.module('starter.controllers', [])
      var i2;
      
      var fecha=new Date();
-   
-   
-     
-    /* for(i=0;i<$scope.Carros.length;i++){
-       var servicios=$scope.Carros[i].Servicios;
-        mensaje=mensaje+"\n Servicio, Dispositivo "+$scope.Carros[i].Nombre +" : \n";
-       // alert(mensaje);
-        alert(servicios.length);
-       for (i2=0;i2<servicios.length;i2++){
-         alert((fecha.getDay()+"-"+fecha.getMonth()+"-"+fecha.getFullYear()));
-         if((fecha.getDay()+"-"+fecha.getMonth()+"-"+fecha.getFullYear())==servicios[i2].Fecha){
-           mensaje=mensaje+" Fecha: "+servicios[i2].Fecha+"\n";
-           mensaje=mensaje+" Hora Servicio: "+ servicios[i2].horafinal+"\n";
-           mensaje=mensaje+" Duración Servicio: "+ servicios[i2].duracion+"\n";
-           alert(mensaje);
-         }
-       }
-     }*/
-     
-     
-       /* if(window.plugins && window.plugins.emailComposer) {
-            window.plugins.emailComposer.showEmailComposerWithCallback(function(result) {
-                console.log("Response -> " + result);
-            }, 
-            "Consolidado dia", // Subject
-            mensaje,                      // Body
-            ["sistemasagilescol@gmail.com"],    // To
-            null,                    // CC
-            null,                    // BCC
-            false,                   // isHTML
-            null,                    // Attachments
-            null);                   // Attachment Data
-        }*/
   };
   
 })
 
 .controller('DetalleDispCtrl',function($scope,$stateParams,$firebaseArray,DBCarr){
 
-  // $scope.dispositivo=$stateParams.dispId;
-   
    $scope.Carro=DBCarr.getCar($stateParams.dispId);
    $scope.dispositivo=$scope.Carro.Nombre;
    
-   $scope.servicios=  $scope.Carro.Servicios;
-   
-   
-   /*var demora=(1680/60)/60;
-     
-     var horaActual = dat.getHours()+(dat.getMinutes()/60);
-     
-     var diferencia=horaActual-demora;
-     
-     var horas=Math.floor(diferencia);
-     
-     var minutos=diferencia-Math.floor(diferencia);
-     
-     var minutosFinales=Math.floor(minutos*60);
-     
-     alert(dat.getDay()+"-"+ meses[dat.getMonth()]+"-"+dat.getFullYear());
-     
-   }*/
+   $scope.Servicios =  $scope.Carro.Servicios;
+
     
 })
 
@@ -316,22 +307,23 @@ angular.module('starter.controllers', [])
   
   
   $scope.addCarro=function(){
-   // alert($scope.carro.tipo);
-    // carritosDB.$add($scope.carro);
-   // 
+    $scope.carro.Analizado=false;
+    $scope.carro.Estado="DB";
+    $scope.carro.Mantenimiento=true;
+     $scope.carro.timer=0;
+     
    DBCarr.addCarro($scope.carro);
    $state.go("tab.Dispositivos");
   };
   
-  
 })
 
+.controller('DispositivosCtrl', function($scope,$firebaseArray,SESION,$state,DBCarr) {
 
-.controller('DispositivosCtrl', function($scope,$firebaseArray,$state,DBCarr) {
-  //Apuntador principal
    $scope.DispositivosBLE=DBCarr.ObtenerCarros();
-   
+   $scope.CentroComercial=SESION.data.centroComercial;
   $scope.nuevoDispositivo=function(){
     $state.go("tab.AddCarro");
+    
   }
 });

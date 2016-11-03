@@ -1,0 +1,29 @@
+<ion-view view-title="Usuarios" >
+  <ion-content>
+    
+    <h1 class="title">{{mensajePermiso}}</h1>
+    
+    <div class="list" ng-hide="esconder">
+      
+      <div clas="item">
+          <h1 class="title">LISTADO DE USUARIOS </h1>
+    </div>
+    
+    <a class="item item-avatar" ng-repeat="usuario in listaUsuarios">
+      <img src="https://appstudio.windows.com/Content/img/temp/icon-user.png">
+      <h2>{{usuario.nombre + usuario.Apellido}}</h2>
+      <p>{{usuario.centroComercial}}</p>
+      <p>{{usuario.rol}}</p>
+    </a>
+
+    <div class="item">
+      
+       <button class="button button-block button-positive" ng-click="addUsuario()">
+          Agregar
+       </button> 
+        
+    </div>
+   </div>
+   
+  </ion-content>
+</ion-view>
