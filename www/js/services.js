@@ -270,7 +270,7 @@ angular.module('starter.services', [])
   }
 })
 
-.factory('DBCarr',function($firebaseArray){
+.factory('DBCarr',function($firebaseArray,$firebaseObject){
    var dispositivos;
    var carritosDB;
    
@@ -284,6 +284,14 @@ angular.module('starter.services', [])
     },
     ObtenerCarros : function(){
        return carritosDB;
+    },ActualizarCarro:function(carrito){
+     /* var ref = new Firebase("https://carritoscc.firebaseio.com/Ubicacion/"+cc+"/Dispositivos/" + idDisp+"");
+      var configuracion=$firebaseObject(ref);
+      
+      configuracion.Estado=estado;*/
+      
+      carritosDB.$save(carrito);
+      
     },
     addCarro:function(carro){
       carritosDB.$add(carro);

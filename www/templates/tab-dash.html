@@ -24,7 +24,7 @@
             <p>{{device.timer}}</p>
             <p>{{device.HoraInicio}}</p>
             <p>{{device.HoraFin}}</p>-->
-           <ion-toggle  ng-model="device.Mantenimiento" 
+           <ion-toggle  ng-model="device.Mantenimiento" ng-hide="denegarMantenimiento" 
                     ng-checked="true">Fuera de servicio</ion-toggle>
           </ion-item>
         </ion-list>

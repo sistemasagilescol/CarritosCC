@@ -1,0 +1,27 @@
+<ion-view view-title="Configuraciones" >
+  <ion-content>
+    
+    <h1 class="title">{{mensajePermiso}}</h1>
+    
+    <div class="list" ng-hide="esconder">
+      
+       <label class="item item-input item-stacked-label">
+        <span class="input-label">Tiempo Espera desde servicio</span>
+        <input type="text" placeholder="10 seg" ng-model="configuracion.TiempoServicio">
+      </label>
+      
+      <label class="item item-input item-stacked-label">
+        <span class="input-label">Radio de accion</span>
+        <input type="text" placeholder="1 mts" ng-model="configuracion.Radio">
+      </label>
+      
+    <div class="item">
+       <button class="button button-block button-positive" ng-click="Verificar()">
+          Guardar
+       </button> 
+    </div>
+    
+   </div>
+   
+  </ion-content>
+</ion-view>

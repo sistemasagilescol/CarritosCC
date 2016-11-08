@@ -1,7 +1,7 @@
 angular.module('starter.controllers', [])
 
 
-.controller('loginCtrl',function($scope,$firebaseArray,$state,DBCarr,SESION,usuarioServicio){
+.controller('loginCtrl',function($scope,$firebaseArray,$state,SESION,usuarioServicio){
   
   $scope.loginData={};
   
@@ -20,14 +20,6 @@ angular.module('starter.controllers', [])
   }
   
 })
-
-.controller('GeneralCtrl',function($scope,$firebaseArray,$state,DBCarr){
-  
-  $scope.esconder=false;
-  
-})
-
-
 
 
 .controller('UsuariosCtrl',function($scope,$firebaseArray,$state,usuarioServicio,SESION){
@@ -74,6 +66,8 @@ angular.module('starter.controllers', [])
    
    return hora;
  }
+ 
+ $scope.denegarMantenimiento=false;
  
  // var dispositivos = new Firebase("https://carritoscc.firebaseio.com/Dispositivos");
  DeviceFactory.setDevices (DBCarr.ObtenerCarros());
@@ -140,6 +134,7 @@ angular.module('starter.controllers', [])
                               carrito.timer=0;
                               carrito.Analizado=true;
                               carrito.Estado="Estacionado";
+                              
                               carrito.HoraInicio=t.getHours() ;//+ " : " + t.getMinutes();
                               carrito.MinutosInicio=t.getMinutes();
                               
@@ -160,13 +155,14 @@ angular.module('starter.controllers', [])
                 function(){
                   
                   angular.forEach($scope.devices,function(value,key){
-                    var carrito=Lista.getDevice(value.id);
+                   // var carrito=Lista.getDevice(value.id);
                     //var carrito=DeviceFactory.getDevice(value.id);
+                    DBCarr.ActualizarCarro(value);
                     
                     if(value.Analizado == false && value.Mantenimiento && value.Estado != "DB"){
                       // var t=new Date();
                       value.timer++;
-                      if(value.timer>10){
+                      if(value.timer>2){
                         value.Estado="Servicio";
                       }
                       
@@ -174,6 +170,7 @@ angular.module('starter.controllers', [])
                        value.Estado="Mantenimiento";
                        value.timer=0;
                     }
+                    
                     
                     value.Analizado = false;
                     
@@ -190,6 +187,18 @@ angular.module('starter.controllers', [])
         
       // DeviceFactory.reset();
        //$window.location.reload();
+       if(SESION.data.rol != "Admin"){
+          
+          $scope.denegarMantenimiento=true;
+          
+           angular.forEach($scope.devices,function(value,key){
+             value.Estado="DB";
+             DBCarr.ActualizarCarro(value);
+           });
+           
+        }
+       
+       
        $scope.ManejoServicio();
  };
  
@@ -315,6 +324,23 @@ angular.module('starter.controllers', [])
    DBCarr.addCarro($scope.carro);
    $state.go("tab.Dispositivos");
   };
+  
+})
+
+//ConfigCtrl
+.controller('ConfigCtrl', function($scope,$firebaseObject,$state,SESION) {
+  
+  var referenciaDb=new Firebase("https://carritoscc.firebaseio.com/Ubicacion/"+SESION.data.centroComercial+"/Configuracion");
+  $scope.configuracion=$firebaseObject(referenciaDb);
+  
+  $scope.mensajePermiso="";
+  $scope.esconder=false;
+  
+  $scope.Verificar=function(){
+    $scope.configuracion.$save();
+    alert("Cambios guardados");
+  }
+  
   
 })
 

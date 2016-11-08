@@ -67,8 +67,7 @@ angular.module('starter', ['ionic', 'ionic.cloud','starter.controllers', 'starte
     .state('tab', {
     url: '/tab',
     abstract: true,
-    templateUrl: 'templates/tabs.html',
-    controller: 'GeneralCtrl'
+    templateUrl: 'templates/tabs.html'
   })
 
   // Each tab has its own nav history stack:
@@ -116,9 +115,17 @@ angular.module('starter', ['ionic', 'ionic.cloud','starter.controllers', 'starte
     
 //Final backEnd Usuarios    
     
-    //Backend Centro Comerciales
-    
-    //Final backend centros comerciales
+    //Backend Configuraciones
+    .state('tab.Configuraciones', {
+      url: '/Configuraciones',
+      views: {
+        'Configuraciones': {
+          templateUrl: 'templates/Configuraciones.html',
+          controller: 'ConfigCtrl'
+        }
+      }
+    })
+    //Final backend Configuraciones
     
     
     .state('tab.DispDetail',{
