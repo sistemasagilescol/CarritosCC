@@ -1,7 +1,7 @@
 angular.module('starter.controllers', [])
 
 
-.controller('loginCtrl',function($scope,$firebaseArray,$state,SESION,usuarioServicio){
+.controller('loginCtrl',function($scope,$firebaseArray,$firebaseObject,$state,SESION,usuarioServicio){
   
   $scope.loginData={};
   
@@ -12,7 +12,7 @@ angular.module('starter.controllers', [])
     if( usuario != null){
       
       SESION.data=usuario;
-     
+      
       $state.go('tab.dash');
     }else{
       alert("Usuario o contraseña incorrecta");
@@ -72,7 +72,16 @@ angular.module('starter.controllers', [])
  // var dispositivos = new Firebase("https://carritoscc.firebaseio.com/Dispositivos");
  DeviceFactory.setDevices (DBCarr.ObtenerCarros());
  
+ $scope.configuracionCC={};
+ 
  $scope.devices= DeviceFactory.getDevices();
+ 
+      if(SESION.data.rol != "Admin"){
+          
+          $scope.denegarMantenimiento=true;
+          
+        }
+ 
  
   $scope.ManejoServicio=function(){
     
@@ -88,8 +97,10 @@ angular.module('starter.controllers', [])
                        //var indexCarrito=DeviceFactory.getIndex(device);
                        var carrito=DeviceFactory.getDevice(device.id);
                        var t=new Date();
-                        
-                            if(carrito!= null && carrito.Mantenimiento && device.rssi > -100){
+                       carrito.Intimer=true;
+                       carrito.timerServicio++;
+                       
+                            if(carrito!= null && carrito.Mantenimiento && device.rssi > ($scope.configuracionCC.Radio*-0.729) && carrito.timerServicio > ($scope.configuracionCC.TiempoServicio)){
                               carrito.rssi=device.rssi;
                              // Lista.addDevice(carrito);
                               if(carrito.Estado == "Servicio"){
@@ -120,7 +131,7 @@ angular.module('starter.controllers', [])
                                     break;
                                  }
                                  
-                                 var objeto={cobro:pago,
+                                 var objeto={usuario:SESION.data.nombre,cobro:pago,
                                  fecha:dat,duracion:minutosServicio,horaInicial:inicio,
                                  horaFinal:carrito.HoraFin};
                                  
@@ -134,10 +145,15 @@ angular.module('starter.controllers', [])
                               carrito.timer=0;
                               carrito.Analizado=true;
                               carrito.Estado="Estacionado";
-                              
+                              carrito.timerServicio=0;
                               carrito.HoraInicio=t.getHours() ;//+ " : " + t.getMinutes();
                               carrito.MinutosInicio=t.getMinutes();
                               
+                              if(carrito.tiempEsta==0){
+                                 DBCarr.ActualizarCarro(carrito);
+                                 carrito.tiempEsta++;
+                              }
+                             
                             }
                      }
                       });
@@ -151,59 +167,63 @@ angular.module('starter.controllers', [])
            
            setTimeout(
                 ble.stopScan,
-                1500,
+                2000,
                 function(){
                   
                   angular.forEach($scope.devices,function(value,key){
                    // var carrito=Lista.getDevice(value.id);
                     //var carrito=DeviceFactory.getDevice(value.id);
-                    DBCarr.ActualizarCarro(value);
-                    
+                   
                     if(value.Analizado == false && value.Mantenimiento && value.Estado != "DB"){
                       // var t=new Date();
+                      if(value.Intimer != true){
+                        value.timerServicio=0;
+                      }
+                      
                       value.timer++;
-                      if(value.timer>2){
+                      if(value.timer > ($scope.configuracionCC.TiempoSalida) && value.Intimer != true){
                         value.Estado="Servicio";
+                        //value.Intimer=false;
+                        
+                        DBCarr.ActualizarCarro(value);
+                        
+                        value.tiempEsta=0;
+                        value.timer=0;
+                       // value.timerServicio=0;
                       }
                       
                     }else if(value.Mantenimiento == false){
                        value.Estado="Mantenimiento";
                        value.timer=0;
                     }
-                    
-                    
                     value.Analizado = false;
-                    
+                    value.Intimer=false;
                   });
                   
                 },
                 function(){
                 }
             );
-        }, 2000);
+        }, 2500);
   };
   
  $scope.conectar=function(){
         
       // DeviceFactory.reset();
        //$window.location.reload();
-       if(SESION.data.rol != "Admin"){
-          
-          $scope.denegarMantenimiento=true;
-          
-           angular.forEach($scope.devices,function(value,key){
-             value.Estado="DB";
-             DBCarr.ActualizarCarro(value);
-           });
-           
-        }
+       DBCarr.ActualizarEstado("DB");
+       var configuracion=DBCarr.ObtenerConfiguracion(SESION.data.centroComercial);
        
+       configuracion.$loaded().then(function (){
+        $scope.configuracionCC=configuracion;
+      });
        
-       $scope.ManejoServicio();
+        $scope.ManejoServicio();
  };
  
  $scope.parar=function(){
-   if (confirm('Seguro quieres cerrar la app ')) {
+   if (confirm("Seguro quieres cerrar la app ")) {
+      //DBCarr.ActualizarEstado("DB");
       ionic.Platform.exitApp(); 
       window.close();
     }
@@ -211,37 +231,40 @@ angular.module('starter.controllers', [])
  
 })
 
-.controller('ChatsCtrl', function($scope, DBCarr,$state,$firebaseArray,SESION) {
-  
-  
-   $scope.esconder=true;
-  
-    if(SESION.data.rol == "Admin"){
-      $scope.esconder=false;
-    }else{
-      $scope.esconder=true;
-    }
-  
+.controller('ChatsCtrl', function($scope, DBCarr,$state,$firebaseArray) {
+    
+    
    $scope.Carros=DBCarr.ObtenerCarros();
       
    $scope.EnviarCorreo = function() {
-     
-     var mensaje="";
-     var i;
-     var i2;
-     
-     var fecha=new Date();
   };
   
 })
 
-.controller('DetalleDispCtrl',function($scope,$stateParams,$firebaseArray,DBCarr){
+.controller('DetalleDispCtrl',function($scope,$stateParams,$firebaseArray,DBCarr,FiltroServicios){
 
    $scope.Carro=DBCarr.getCar($stateParams.dispId);
    $scope.dispositivo=$scope.Carro.Nombre;
    
-   $scope.Servicios =  $scope.Carro.Servicios;
-
+   var fecha=new Date();
+   
+   $scope.fechaActual=fecha.getDate() +"/"+ (fecha.getMonth()+1)+"/"+ fecha.getFullYear();;
+   
+   var provicional=[];
+   
+   angular.forEach( $scope.Carro.Servicios,function(value,key){
+     
+     if(value.fecha==$scope.fechaActual){
+      provicional.push(value);
+     }
+   }
+   )
+   FiltroServicios.setservicios(provicional);
+   $scope.Servicios = FiltroServicios.getServices();
+   
+   
+   
+   
     
 })
 

@@ -285,13 +285,28 @@ angular.module('starter.services', [])
     ObtenerCarros : function(){
        return carritosDB;
     },ActualizarCarro:function(carrito){
-     /* var ref = new Firebase("https://carritoscc.firebaseio.com/Ubicacion/"+cc+"/Dispositivos/" + idDisp+"");
-      var configuracion=$firebaseObject(ref);
-      
-      configuracion.Estado=estado;*/
       
       carritosDB.$save(carrito);
       
+    },ActualizarEstado:function(est){
+       var i;
+      
+      for (i=0;i<carritosDB.length;i++){
+        carritosDB[i].Estado=est;
+        carritosDB[i].tiempEsta=0;
+        carritosDB[i].timer=0;
+        carritosDB[i].timerServicio=0;
+        carritosDB.$save(carritosDB[i]);
+        
+      }
+    },
+    ObtenerConfiguracion:function(cc){
+      var refDisp =new Firebase("https://carritoscc.firebaseio.com/Ubicacion/"+cc+"/Configuracion");
+      var configura=$firebaseObject(refDisp);
+      
+      
+      
+      return configura;
     },
     addCarro:function(carro){
       carritosDB.$add(carro);
@@ -384,6 +399,39 @@ angular.module('starter.services', [])
 
     };
   })
+
+.factory('FiltroServicios',function(){
+  var servicios = [];
+  
+  return{
+    setservicios:function(servic){
+      servicios=servic;
+      //alert(servic.length);
+      
+    },
+    getServices:function(){
+      return servicios;
+    },
+    filtrarServicios:function(dat){
+      var i=0;
+      var objServicio;
+      var listaProvicional=[];
+      
+      //alert(servicios.length);
+      
+      for(i=0;i<servicios.length;i++){
+        alert(objServicio.fecha);
+       // objServicio=servicios[i];
+        //if(objServicio.fecha==dat){
+          //listaProvicional.push(objServicio);
+        //}
+      }
+        
+        return listaProvicional;
+        
+    }
+  }
+})
 
 .factory('Chats', function() {
   // Might use a resource here that returns a JSON array
